@@ -90,12 +90,7 @@ public class InfraKafkaConsumer {
             consumer.subscribe(Lists.newArrayList(topics));
             while(true) {
                 consumer.poll(100).forEach(consumerRecord -> {
-                    System.out.printf("partiton = %d, topic=%s, offset = %d, key = %s, value = %s%n",
-                            consumerRecord.partition(),
-                            consumerRecord.topic(),
-                            consumerRecord.offset(),
-                            consumerRecord.key(),
-                            consumerRecord.value());
+                    logger.info("consumer receive msg:{}", consumerRecord.toString());
                 });
                 if(System.currentTimeMillis() - start > 10000) {
                     break;

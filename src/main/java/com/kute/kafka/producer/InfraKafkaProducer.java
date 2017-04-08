@@ -2,6 +2,8 @@ package com.kute.kafka.producer;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import com.kute.kafka.util.KafkaConstants;
 import com.kute.kafka.util.PropertiesLoader;
@@ -80,9 +82,21 @@ public class InfraKafkaProducer {
         }
         int size = msgDataList.size();
         long sendTime = System.currentTimeMillis();
+        int retry = KafkaConstants.MAX_RETRY_TIMES;
         for (int i=0; i<size; i++) {
             String msgData = msgDataList.get(i);
-            producer.send(new ProducerRecord<>(topic, partitionKey, key, msgData), new MsgCallBack(sendTime, i, msgData));
+            while(retry-- > 0) {
+                Future future = producer.send(new ProducerRecord<>(topic, partitionKey, key, msgData), new MsgCallBack(sendTime, i, msgData));
+                try {
+                    Object object = future.get(3, TimeUnit.SECONDS);
+                    if(null != object) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    logger.info("Timeout .....");
+                }
+                logger.info("=====retry==={}", retry);
+            }
         }
         return true;
     }

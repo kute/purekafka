@@ -3,6 +3,8 @@ package com.kute.kafka.interceptor;
 import org.apache.kafka.clients.producer.ProducerInterceptor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -11,9 +13,11 @@ import java.util.Map;
  */
 public class InfraProducerInterceptor implements ProducerInterceptor {
 
+    private static final Logger logger = LoggerFactory.getLogger(InfraProducerInterceptor.class);
+
     @Override
     public ProducerRecord onSend(ProducerRecord producerRecord) {
-        System.out.println("Msg begin send:" + producerRecord.toString());
+        logger.info("Msg begin send:{}", producerRecord.toString());
         return producerRecord;
     }
 

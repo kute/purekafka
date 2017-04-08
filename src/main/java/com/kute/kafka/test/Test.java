@@ -14,6 +14,8 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerInterceptor;
 import org.apache.kafka.common.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Properties;
@@ -22,6 +24,8 @@ import java.util.Properties;
  * Created by kute on 2017/4/8.
  */
 public class Test {
+
+    private static final Logger logger = LoggerFactory.getLogger(Test.class);
 
     public static void main(String[] args) {
 
@@ -50,32 +54,30 @@ public class Test {
 
         startProducer(topic);
 
-        InfraKafkaConsumerRunner runner = new InfraKafkaConsumerRunner(InfraKafkaConsumer.getInstance(), topic);
-        runner.run();
+//        InfraKafkaConsumerRunner runner = new InfraKafkaConsumerRunner(InfraKafkaConsumer.getInstance(), topic);
+//        runner.run();
     }
 
     private void startProducer(String ... topics) {
         String topic = KafkaConstants.KAFKA_TOPIC;
 
-        System.out.println("start producer and begin send msg.....");
+        logger.info("start producer and begin send msg.....");
         List<String > msgList = Lists.newArrayList();
-        for (Integer i = 0; i < 10; i++) {
+        for (Integer i = 0; i < 1; i++) {
             Book book = new Book(String.valueOf(i), "content " + i, "author_" + i, i + "234.54");
             String msg = JSONObject.toJSONString(book);
             msgList.add(msg);
         }
-        Long start = System.currentTimeMillis();
         try {
             InfraKafkaProducer.getInstance().sendMessage(topic, KafkaConstants.KAFKA_PARTITION_ID,
                     KafkaConstants.KAFKA_TOPIC_KEY, msgList);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(System.currentTimeMillis() - start);
     }
 
     private void startConsumer(String ... topics) {
-        System.out.println("start consumer and wait to consume.....");
+        logger.info("start consumer and wait to consume.....");
         InfraKafkaConsumer.getInstance().consume(topics);
     }
 
