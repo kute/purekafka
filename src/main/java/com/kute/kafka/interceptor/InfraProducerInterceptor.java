@@ -3,6 +3,7 @@ package com.kute.kafka.interceptor;
 import org.apache.kafka.clients.producer.ProducerInterceptor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.internals.ProducerInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

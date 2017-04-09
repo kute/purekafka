@@ -1,1 +1,3 @@
 javadoc: http://kafka.apache.org/0102/javadoc/index.html
+
+http://blog.csdn.net/lizhitao/article/details/23743821
