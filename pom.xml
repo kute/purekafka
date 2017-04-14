@@ -15,7 +15,26 @@
       <version>4.12</version>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+      <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
+      <dependency>
+          <groupId>org.apache.zookeeper</groupId>
+          <artifactId>zookeeper</artifactId>
+          <version>3.4.10</version>
+      </dependency>
+
+      <dependency>
+          <groupId>de.javakaffee</groupId>
+          <artifactId>kryo-serializers</artifactId>
+          <version>0.41</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.netease</groupId>
+          <artifactId>ncuc-kafka</artifactId>
+          <version>1.2</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
