@@ -28,12 +28,6 @@
           <version>0.41</version>
       </dependency>
 
-      <dependency>
-          <groupId>com.netease</groupId>
-          <artifactId>ncuc-kafka</artifactId>
-          <version>1.2</version>
-      </dependency>
-
       <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
     <dependency>
       <groupId>org.apache.kafka</groupId>
