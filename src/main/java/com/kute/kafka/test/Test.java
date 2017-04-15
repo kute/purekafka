@@ -69,8 +69,7 @@ public class Test {
             msgList.add(msg);
         }
         try {
-            InfraKafkaProducer.getInstance().sendMessage(topic, KafkaConstants.KAFKA_PARTITION_ID,
-                    KafkaConstants.KAFKA_TOPIC_KEY, msgList);
+            InfraKafkaProducer.getInstance().sendMessage(topic, msgList);
         } catch (Exception e) {
             e.printStackTrace();
         }

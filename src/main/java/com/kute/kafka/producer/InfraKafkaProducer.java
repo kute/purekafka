@@ -53,74 +53,150 @@ public class InfraKafkaProducer {
     }
 
     /**
-     * 发送一条message
-     * 
+     * send single msg
      * @param topic
-     * @param partitionKey
      * @param msgData
      * @return
      */
-    public boolean sendMessage(String topic, Integer partitionKey, String key, String msgData) {
-        if(Strings.isNullOrEmpty(msgData)) {
-            return true;
-        }
-        List<String> msgList = Lists.newArrayList(msgData);
-        return sendMessage(topic, partitionKey, key, msgList);
+    public Boolean sendMessage(String topic, String msgData) {
+        return sendMessage(topic, null, msgData);
     }
 
     /**
-     * 发送多条message
-     * 
+     * send single msg
      * @param topic
-     * @param partitionKey
-     * @param msgDataList
+     * @param key
+     * @param msgData
      * @return
      */
-    public boolean sendMessage(String topic, Integer partitionKey, String key, List<String> msgDataList) {
-        if(CollectionUtils.isEmpty(msgDataList)) {
-            return true;
+    public Boolean sendMessage(String topic, String key, String msgData) {
+        return sendMessage(topic, null, key, msgData);
+    }
+
+    /**
+     * send single msg
+     * @param topic
+     * @param partitionId
+     * @param key
+     * @param msgData
+     * @return
+     */
+    public Boolean sendMessage(String topic, Integer partitionId, String key, String msgData) {
+        return sendMessage(topic, partitionId, null, key, msgData);
+    }
+
+    /**
+     * send single msg
+     * @param topic
+     * @param partitionId
+     * @param timeStamp
+     * @param key
+     * @param msgData
+     * @return
+     */
+    public Boolean sendMessage(String topic, Integer partitionId, Long timeStamp, String key, String msgData) {
+        Boolean result = Boolean.TRUE;
+        if(Strings.isNullOrEmpty(msgData)) {
+            return result;
         }
-        int size = msgDataList.size();
-        long sendTime = System.currentTimeMillis();
-        int retry = KafkaConstants.MAX_RETRY_TIMES;
-        for (int i=0; i<size; i++) {
-            String msgData = msgDataList.get(i);
-            while(retry-- > 0) {
-                Future future = producer.send(new ProducerRecord<>(topic, partitionKey, key, msgData), new MsgCallBack(sendTime, i, msgData));
-                try {
-                    Object object = future.get(3, TimeUnit.SECONDS);
-                    if(null != object) {
-                        break;
-                    }
-                } catch (Exception e) {
-                    logger.info("Timeout .....");
+        int retry = 0;
+        ProducerRecord<String, String > record;
+        if(null == key) {
+            record = new ProducerRecord<>(topic, msgData);
+        } else if(null == partitionId) {
+            record = new ProducerRecord<>(topic, key, msgData);
+        } else if(null == timeStamp) {
+            record = new ProducerRecord<>(topic, partitionId, key, msgData);
+        } else {
+            record = new ProducerRecord<>(topic, partitionId, timeStamp, key, msgData);
+        }
+        while(retry++ <= KafkaConstants.MAX_RETRY_TIMES) {
+            Future future = producer.send(record, new MsgCallBack(System.currentTimeMillis(), retry, msgData));
+            try {
+                if(null != future.get(2, TimeUnit.SECONDS)) {
+                    break;
                 }
-                logger.info("=====retry==={}", retry);
+            } catch (Exception e) {
+                logger.error("msg={} sendTimeout after retry={} and error={}", new Object[]{
+                        msgData, retry, retry
+                });
+                if(retry == KafkaConstants.MAX_RETRY_TIMES) {
+                    result = Boolean.FALSE;
+                }
             }
         }
-        return true;
+        return result;
+    }
+
+    /**
+     * send mutil msg
+     * @param topic
+     * @param msgDataList
+     */
+    public void sendMessage(String topic, List<String> msgDataList) {
+        sendMessage(topic, null, msgDataList);
+    }
+
+    /**
+     * send mutil msg
+     * @param topic
+     * @param key
+     * @param msgDataList
+     */
+    public void sendMessage(String topic, String key, List<String> msgDataList) {
+        sendMessage(topic, null, key, msgDataList);
+    }
+
+    /**
+     * send mutil msg
+     * @param topic
+     * @param partitionId
+     * @param key
+     * @param msgDataList
+     */
+    public void sendMessage(String topic, Integer partitionId, String key, List<String> msgDataList) {
+        sendMessage(topic, partitionId, null, key, msgDataList);
+    }
+
+    /**
+     * send mutil msg
+     * @param topic
+     * @param partitionId
+     * @param timeStamp
+     * @param key
+     * @param msgDataList
+     */
+    public void sendMessage(String topic, Integer partitionId, Long timeStamp, String key, List<String> msgDataList) {
+        if(CollectionUtils.isEmpty(msgDataList)) {
+            return;
+        }
+        for(String msgData: msgDataList) {
+            sendMessage(topic, partitionId, timeStamp, key, msgData);
+        }
     }
     
     class MsgCallBack implements Callback {
         
         private final long sendTime;
-        private final int msgId;
+        private final int retry;
         private final String msg;
 
-        public MsgCallBack(long sendTime, int msgId, String msg) {
+        public MsgCallBack(long sendTime, int retry, String msg) {
             this.sendTime = sendTime;
-            this.msgId = msgId;
+            this.retry = retry;
             this.msg = msg;
         }
 
         @Override
         public void onCompletion(RecordMetadata metadata, Exception e) {
             if(null == metadata) {
-                //TODO 失败
-                System.out.println("send failed:" + e);
+                logger.error("Kafka send msg failed: msg={}, sendTime={}, retry={}, error={}", new Object[]{
+                        msg, sendTime, retry, e
+                });
             } else {
-                //TODO 成功
-                System.out.println("send ok:" + metadata.offset());
+                logger.info("Kafka send msg ok: msg={}, metaData={}", new Object[]{
+                        msg, metadata.toString()
+                });
             }
         }
         
