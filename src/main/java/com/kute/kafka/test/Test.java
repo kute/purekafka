@@ -31,13 +31,13 @@ public class Test {
 
         Test test = new Test();
 
-//        InfraKafkaConsumer consumer = InfraKafkaConsumer.getInstance();
-//        System.out.println(consumer.listAllTopics());
+        InfraKafkaConsumer consumer = InfraKafkaConsumer.getInstance();
+        System.out.println(consumer.listAllTopics());
 
 //        System.out.println(OperationUtils.getConsumerConfigNames());
 
 //        test.example_1();
-        test.example_2();
+//        test.example_2();
     }
 
     public void example_1() {
