@@ -43,7 +43,7 @@ public class OperationUtils {
         this.connectionTimeout = connectionTimeout;
 
         this.zkClient = new ZkClient(this.zkUrl, this.sessionTimeout, this.connectionTimeout, ZKStringSerializer$.MODULE$);
-//        return ZkUtils.apply(this.zkUrl, this.sessionTimeout, this.connectionTimeout, JaasUtils.isZkSecurityEnabled());
+//        this.zkUtils = ZkUtils.apply(this.zkUrl, this.sessionTimeout, this.connectionTimeout, JaasUtils.isZkSecurityEnabled());
         this.zkUtils = ZkUtils.apply(this.zkClient, JaasUtils.isZkSecurityEnabled());
     }
 
@@ -54,7 +54,7 @@ public class OperationUtils {
         this.connectionTimeout = connectionTimeout;
 
         this.zkClient = new ZkClient(this.zkUrl, this.sessionTimeout, this.connectionTimeout, ZKStringSerializer$.MODULE$);
-//        return ZkUtils.apply(this.zkUrl, this.sessionTimeout, this.connectionTimeout, JaasUtils.isZkSecurityEnabled());
+//        this.zkUtils = ZkUtils.apply(this.zkUrl, this.sessionTimeout, this.connectionTimeout, JaasUtils.isZkSecurityEnabled());
         this.zkUtils = ZkUtils.apply(this.zkClient, isZkSecurityEnabled);
     }
 
@@ -117,9 +117,9 @@ public class OperationUtils {
     }
 
     private String getUrl(String host, Integer port) {
-        if(Strings.isNullOrEmpty(host)) { host = "localhost"; }
+        if(Strings.isNullOrEmpty(host)) { host = "127.0.0.1"; }
         if(null == port) { port = new Integer(2181); }
-        return Joiner.on(":").useForNull("").join(host, port);
+        return Joiner.on(":").join(host, port);
     }
 
     public static void main(String[] args) {
