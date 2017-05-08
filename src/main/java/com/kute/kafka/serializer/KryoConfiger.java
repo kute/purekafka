@@ -34,11 +34,12 @@ import de.javakaffee.kryoserializers.wicket.MiniMapSerializer;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.objenesis.strategy.StdInstantiatorStrategy;
 
 /**
  * Created by longbai on 2017/4/14.
  */
-public class KyroConfiger {
+public class KryoConfiger {
 
     public static Kryo getConfiger() {
         Kryo kryo = new Kryo();
@@ -83,6 +84,7 @@ public class KyroConfiger {
         LinkedHashMultimapSerializer.registerSerializers(kryo);
         LinkedListMultimapSerializer.registerSerializers(kryo);
         TreeMultimapSerializer.registerSerializers(kryo);
+        ((Kryo.DefaultInstantiatorStrategy) kryo.getInstantiatorStrategy()).setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
         return kryo;
     }
 }
